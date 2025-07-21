@@ -11,3 +11,7 @@ https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/
 ### in helm folder
 helm create eazybank-common
 Creating eazybank-common
+
+### in eazybank-services folder
+helm create accounts
+Creating accounts
