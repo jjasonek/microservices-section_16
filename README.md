@@ -6,4 +6,7 @@ https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/
 ## Kubernetes: kind 1.23.5 
 
 
+## Creating our own Helm chart
 
+helm create eazybank-common
+Creating eazybank-common
