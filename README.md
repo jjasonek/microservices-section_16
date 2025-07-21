@@ -8,5 +8,6 @@ https://www.udemy.com/course/master-microservices-with-spring-docker-kubernetes/
 
 ## Creating our own Helm chart
 
+### in helm folder
 helm create eazybank-common
 Creating eazybank-common
