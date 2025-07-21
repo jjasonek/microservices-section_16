@@ -15,3 +15,12 @@ Creating eazybank-common
 ### in eazybank-services folder
 helm create accounts
 Creating accounts
+
+### in accounts folder
+helm dependencies build
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "kubernetes-dashboard" chart repository
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 1 charts
+Deleting outdated charts
