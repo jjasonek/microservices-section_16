@@ -31,3 +31,12 @@ Deleting outdated charts
 ### in environments folder
 helm create dev-env
 Creating dev-env
+
+### in dev-env folder
+helm dependencies build
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "kubernetes-dashboard" chart repository
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 8 charts
+Deleting outdated charts
