@@ -24,3 +24,10 @@ Hang tight while we grab the latest from your chart repositories...
 Update Complete. ⎈Happy Helming!⎈
 Saving 1 charts
 Deleting outdated charts
+
+
+## Helm chart for environments
+
+### in environments folder
+helm create dev-env
+Creating dev-env
