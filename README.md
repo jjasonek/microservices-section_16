@@ -59,4 +59,16 @@ Pulled: registry-1.docker.io/bitnamicharts/common:2.31.0
 Digest: sha256:972d8a92610885563a58618911368868481aab8fbf9f3daf083cf6d90994c1d9
 Deleting outdated charts
 
-
+### in helm folder
+helm install keycloak keycloak
+NAME: keycloak
+LAST DEPLOYED: Tue Jul 22 22:13:09 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: keycloak
+CHART VERSION: 24.8.0
+APP VERSION: 26.3.1
+...
