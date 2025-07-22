@@ -40,3 +40,23 @@ Hang tight while we grab the latest from your chart repositories...
 Update Complete. ⎈Happy Helming!⎈
 Saving 8 charts
 Deleting outdated charts
+
+
+## Install KeyCloak
+
+### in keycloak folder after download from Bitnami repository
+helm dependencies build
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "kubernetes-dashboard" chart repository
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 2 charts
+Downloading postgresql from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/postgresql:16.6.6
+Digest: sha256:a8a0fd5ecbec861cc8462a417a8804c182caa2ee1666abc1a0f8a7f9126c2e40
+Downloading common from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/common:2.31.0
+Digest: sha256:972d8a92610885563a58618911368868481aab8fbf9f3daf083cf6d90994c1d9
+Deleting outdated charts
+
+
