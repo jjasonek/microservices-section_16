@@ -72,3 +72,32 @@ CHART NAME: keycloak
 CHART VERSION: 24.8.0
 APP VERSION: 26.3.1
 ...
+
+
+## Install KeyCloak
+
+### in kafka folder after download from Bitnami repository
+helm dependencies build
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "kubernetes-dashboard" chart repository
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 1 charts
+Downloading common from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/common:2.31.0
+Digest: sha256:972d8a92610885563a58618911368868481aab8fbf9f3daf083cf6d90994c1d9
+Deleting outdated charts
+
+### in helm folder
+helm install kafka kafka
+NAME: kafka
+LAST DEPLOYED: Wed Jul 23 13:01:26 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: kafka
+CHART VERSION: 32.3.6
+APP VERSION: 4.0.0
+...
