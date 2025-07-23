@@ -180,3 +180,35 @@ CHART NAME: grafana-loki
 CHART VERSION: 6.0.0
 APP VERSION: 3.5.2
 ...
+
+
+## Install Grafana Tempo
+
+### in grafana-tempo folder after download from Bitnami repository
+helm dependencies build
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "kubernetes-dashboard" chart repository
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 2 charts
+Downloading memcached from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/memcached:7.8.1
+Digest: sha256:0ccbd4137b2a31f068e342c87ffcce7623aeea756c5ecb344215050b8a87941a
+Downloading common from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/common:2.31.0
+Digest: sha256:972d8a92610885563a58618911368868481aab8fbf9f3daf083cf6d90994c1d9
+Deleting outdated charts
+
+### in helm folder
+helm install tempo grafana-tempo
+NAME: tempo
+LAST DEPLOYED: Wed Jul 23 16:57:35 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: grafana-tempo
+CHART VERSION: 4.0.13
+APP VERSION: 2.8.1
+...
