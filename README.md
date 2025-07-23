@@ -101,3 +101,38 @@ CHART NAME: kafka
 CHART VERSION: 32.3.6
 APP VERSION: 4.0.0
 ...
+
+
+## Install Prometheus
+
+### in kube-prometheus folder after download from Bitnami repository
+helm dependencies build
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "kubernetes-dashboard" chart repository
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 4 charts
+Downloading node-exporter from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/node-exporter:4.5.11
+Digest: sha256:609e8010b1bce57a219d2b51271066e556256e52deac3c25abed1acf5c2e3d11
+Downloading kube-state-metrics from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/kube-state-metrics:5.0.6
+Digest: sha256:6362d05afe0cce25fc5dd667a1ba76305e0bebd2954895b32d9dda468b59d10e
+Downloading common from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/common:2.31.0
+Digest: sha256:972d8a92610885563a58618911368868481aab8fbf9f3daf083cf6d90994c1d9
+Deleting outdated charts
+
+### in helm folder
+helm install prometheus kube-prometheus
+NAME: prometheus
+LAST DEPLOYED: Wed Jul 23 16:07:29 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: kube-prometheus
+CHART VERSION: 11.2.16
+APP VERSION: 0.84.0
+...
