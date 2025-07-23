@@ -136,3 +136,47 @@ CHART NAME: kube-prometheus
 CHART VERSION: 11.2.16
 APP VERSION: 0.84.0
 ...
+
+
+## Install Grafana Loki
+
+### in grafana-loki folder after download from Bitnami repository
+helm dependencies build
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "kubernetes-dashboard" chart repository
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 6 charts
+Downloading grafana-alloy from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/grafana-alloy:1.0.0
+Digest: sha256:ddb8e0b01af350a4eee64d7631d8252ab2f4617f6b26d87cc7724496cd552c1d
+Downloading memcached from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/memcached:7.9.3
+Digest: sha256:fb348332ff7e2cb414f0d79338cca37101d458c49c981a2a5b7385e45c622331
+Downloading memcached from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/memcached:7.9.3
+Digest: sha256:fb348332ff7e2cb414f0d79338cca37101d458c49c981a2a5b7385e45c622331
+Downloading memcached from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/memcached:7.9.3
+Digest: sha256:fb348332ff7e2cb414f0d79338cca37101d458c49c981a2a5b7385e45c622331
+Downloading memcached from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/memcached:7.9.3
+Digest: sha256:fb348332ff7e2cb414f0d79338cca37101d458c49c981a2a5b7385e45c622331
+Downloading common from repo oci://registry-1.docker.io/bitnamicharts
+Pulled: registry-1.docker.io/bitnamicharts/common:2.31.3
+Digest: sha256:924aa307587ee64855387a9506103b59e1c1c0664b49d43b715ed5307281afbb
+Deleting outdated charts
+
+### in helm folder
+helm install loki grafana-loki
+NAME: loki
+LAST DEPLOYED: Wed Jul 23 16:40:51 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: grafana-loki
+CHART VERSION: 6.0.0
+APP VERSION: 3.5.2
+...
