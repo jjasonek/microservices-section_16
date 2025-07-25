@@ -16,34 +16,25 @@ helm install my-release oci://registry-1.docker.io/bitnamicharts/grafana
 
 Looking to use Grafana in production? Try [VMware Tanzu Application Catalog](https://bitnami.com/enterprise), the commercial edition of the Bitnami catalog.
 
-## ⚠️ Important Notice: Upcoming changes to the Bitnami Catalog
-
-Beginning August 28th, 2025, Bitnami will evolve its public catalog to offer a curated set of hardened, security-focused images under the new [Bitnami Secure Images initiative](https://news.broadcom.com/app-dev/broadcom-introduces-bitnami-secure-images-for-production-ready-containerized-applications). As part of this transition:
-
-- Granting community users access for the first time to security-optimized versions of popular container images.
-- Bitnami will begin deprecating support for non-hardened, Debian-based software images in its free tier and will gradually remove non-latest tags from the public catalog. As a result, community users will have access to a reduced number of hardened images. These images are published only under the “latest” tag and are intended for development purposes
-- Starting August 28th, over two weeks, all existing container images, including older or versioned tags (e.g., 2.50.0, 10.6), will be migrated from the public catalog (docker.io/bitnami) to the “Bitnami Legacy” repository (docker.io/bitnamilegacy), where they will no longer receive updates.
-- For production workloads and long-term support, users are encouraged to adopt Bitnami Secure Images, which include hardened containers, smaller attack surfaces, CVE transparency (via VEX/KEV), SBOMs, and enterprise support.
-
-These changes aim to improve the security posture of all Bitnami users by promoting best practices for software supply chain integrity and up-to-date deployments. For more details, visit the [Bitnami Secure Images announcement](https://github.com/bitnami/containers/issues/83267).
-
 ## Introduction
 
 This chart bootstraps a [grafana](https://github.com/bitnami/containers/tree/main/bitnami/grafana) deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+
+Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment and management of Helm Charts in clusters.
 
 ## Differences between the Bitnami Grafana chart and the Bitnami Grafana Operator chart
 
 In the Bitnami catalog we offer both the bitnami/grafana and bitnami/grafana-operator charts. Each solution covers different needs and use cases.
 
-The *bitnami/grafana* chart deploys a single Grafana installation using a Kubernetes Deployment object (together with Services, PVCs, ConfigMaps, etc.) or a Kubernetes StatefulSet object (with headless service, volumeClaimTemplate and ConfigMaps). The figure below shows the deployed objects in the cluster after executing *helm install*:
+The *bitnami/grafana* chart deploys a single Grafana installation using a Kubernetes Deployment object (together with Services, PVCs, ConfigMaps, etc.). The figure below shows the deployed objects in the cluster after executing *helm install*:
 
 ```text
                     +--------------+             +-----+
                     |              |             |     |
  Service & Ingress  |    Grafana   +<------------+ PVC |
 <-------------------+              |             |     |
-                    |  Deployment/ |             +-----+
-                    |  StatefulSet |
+                    |  Deployment  |             +-----+
+                    |              |
                     +-----------+--+
                                 ^                +------------+
                                 |                |            |
@@ -379,8 +370,6 @@ imageRenderer:
 To support HA Grafana just need an external database where store dashboards, users and other persistent data.
 To configure the external database provide a configuration file containing the [database section](https://grafana.com/docs/installation/configuration/#database)
 
-It's also recommended to use a `StatefulSet` kind instead of a `Deployment` kind to leverage the `volumeClaimTemplates`.
-
 More information about Grafana HA [here](https://grafana.com/docs/tutorials/ha_setup/)
 
 ### Setting Pod's affinity
@@ -421,11 +410,9 @@ See the [Parameters](#parameters) section to configure the PVC or to disable per
 | `extraDeploy`       | Array of extra objects to deploy with the release                                       | `[]`            |
 | `nameOverride`      | String to partially override grafana.fullname template (will maintain the release name) | `""`            |
 | `fullnameOverride`  | String to fully override grafana.fullname template                                      | `""`            |
-| `namespaceOverride` | String to fully override common.names.namespace                                         | `""`            |
 | `clusterDomain`     | Default Kubernetes cluster domain                                                       | `cluster.local` |
 | `commonLabels`      | Labels to add to all deployed objects                                                   | `{}`            |
 | `commonAnnotations` | Annotations to add to all deployed objects                                              | `{}`            |
-| `usePasswordFiles`  | Mount credentials as files instead of using environment variables                       | `true`          |
 
 ### Grafana parameters
 
@@ -490,8 +477,6 @@ See the [Parameters](#parameters) section to configure the PVC or to disable per
 | Name                                                        | Description                                                                                                                                                                                                                       | Value            |
 | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
 | `grafana.replicaCount`                                      | Number of Grafana nodes                                                                                                                                                                                                           | `1`              |
-| `grafana.kind`                                              | Use either Deployment or StatefulSet (default)                                                                                                                                                                                    | `Deployment`     |
-| `grafana.podManagementPolicy`                               | StatefulSet pod management policy                                                                                                                                                                                                 | `Parallel`       |
 | `grafana.updateStrategy.type`                               | Set up update strategy for Grafana installation.                                                                                                                                                                                  | `RollingUpdate`  |
 | `grafana.automountServiceAccountToken`                      | Mount Service Account token in pod                                                                                                                                                                                                | `false`          |
 | `grafana.hostAliases`                                       | Add deployment host aliases                                                                                                                                                                                                       | `[]`             |
@@ -560,9 +545,7 @@ See the [Parameters](#parameters) section to configure the PVC or to disable per
 | `grafana.extraVolumes`                                      | Additional volumes for the Grafana pod                                                                                                                                                                                            | `[]`             |
 | `grafana.extraVolumeMounts`                                 | Additional volume mounts for the Grafana container                                                                                                                                                                                | `[]`             |
 | `grafana.extraEnvVarsCM`                                    | Name of existing ConfigMap containing extra env vars for Grafana nodes                                                                                                                                                            | `""`             |
-| `grafana.extraEnvVarsCMOptional`                            | Whether to still run the Grafana node if the ConfigMap does not exist                                                                                                                                                             | `false`          |
 | `grafana.extraEnvVarsSecret`                                | Name of existing Secret containing extra env vars for Grafana nodes                                                                                                                                                               | `""`             |
-| `grafana.extraEnvVarsSecretOptional`                        | Whether to still run the Grafana node if the Secret does not exist                                                                                                                                                                | `false`          |
 | `grafana.extraEnvVars`                                      | Array containing extra env vars to configure Grafana                                                                                                                                                                              | `[]`             |
 | `grafana.extraConfigmaps`                                   | Array to mount extra ConfigMaps to configure Grafana                                                                                                                                                                              | `[]`             |
 | `grafana.command`                                           | Override default container command (useful when using custom images)                                                                                                                                                              | `[]`             |
@@ -573,15 +556,15 @@ See the [Parameters](#parameters) section to configure the PVC or to disable per
 
 ### Persistence parameters
 
-| Name                        | Description                                                                                                                                                                                           | Value           |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| `persistence.enabled`       | Enable persistence                                                                                                                                                                                    | `true`          |
-| `persistence.annotations`   | Persistent Volume Claim annotations                                                                                                                                                                   | `{}`            |
-| `persistence.accessMode`    | Persistent Volume Access Mode                                                                                                                                                                         | `ReadWriteOnce` |
-| `persistence.accessModes`   | Persistent Volume Access Modes                                                                                                                                                                        | `[]`            |
-| `persistence.storageClass`  | Storage class to use with the PVC                                                                                                                                                                     | `""`            |
-| `persistence.existingClaim` | If you want to reuse an existing claim, you can pass the name of the PVC using the existingClaim variable. Please note that this setting will be ignored when `grafana.kind` is set to `StatefulSet`. | `""`            |
-| `persistence.size`          | Size for the PV                                                                                                                                                                                       | `10Gi`          |
+| Name                        | Description                                                                                               | Value           |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- | --------------- |
+| `persistence.enabled`       | Enable persistence                                                                                        | `true`          |
+| `persistence.annotations`   | Persistent Volume Claim annotations                                                                       | `{}`            |
+| `persistence.accessMode`    | Persistent Volume Access Mode                                                                             | `ReadWriteOnce` |
+| `persistence.accessModes`   | Persistent Volume Access Modes                                                                            | `[]`            |
+| `persistence.storageClass`  | Storage class to use with the PVC                                                                         | `""`            |
+| `persistence.existingClaim` | If you want to reuse an existing claim, you can pass the name of the PVC using the existingClaim variable | `""`            |
+| `persistence.size`          | Size for the PV                                                                                           | `10Gi`          |
 
 ### RBAC parameters
 
@@ -782,7 +765,7 @@ This major version signifies this change.
 
 ## License
 
-Copyright &copy; 2025 Broadcom. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
+Copyright &copy; 2024 Broadcom. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

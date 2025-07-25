@@ -3,11 +3,11 @@ Copyright Broadcom, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-apiVersion: {{ ternary (include "common.capabilities.deployment.apiVersion" .) (include "common.capabilities.statefulset.apiVersion" .) (eq (lower .Values.grafana.kind) "deployment") }}
-kind: {{ ternary "Deployment" "StatefulSet" (eq (lower .Values.grafana.kind) "deployment") }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
 metadata:
   name: {{ include "common.names.fullname" . }}
-  namespace: {{ include "common.names.namespace" . | quote }}
+  namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
     app.kubernetes.io/component: grafana
   {{- if .Values.commonAnnotations }}
@@ -15,18 +15,12 @@ metadata:
   {{- end }}
 spec:
   replicas: {{ .Values.grafana.replicaCount }}
-  {{- if eq (lower .Values.grafana.kind) "statefulset" }}
-  serviceName: {{ printf "%s-headless" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" }}
-  {{- if .Values.grafana.podManagementPolicy }}
-  podManagementPolicy: {{ .Values.grafana.podManagementPolicy }}
-  {{- end }}
-  {{- end }}
   {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.grafana.podLabels .Values.commonLabels ) "context" . ) }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
       app.kubernetes.io/component: grafana
   {{- if .Values.grafana.updateStrategy }}
-  {{ ternary "strategy" "updateStrategy" (eq (lower .Values.grafana.kind) "deployment") }}: {{ include "common.tplvalues.render" (dict "value" .Values.grafana.updateStrategy "context" .) | nindent 4 }}
+  strategy: {{ include "common.tplvalues.render" (dict "value" .Values.grafana.updateStrategy "context" $) | nindent 4 }}
   {{- end }}
   template:
     metadata:
@@ -135,24 +129,17 @@ spec:
             {{- if .Values.grafana.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.grafana.extraEnvVarsCM "context" $) }}
-                optional: {{ include "common.tplvalues.render" (dict "value" .Values.grafana.extraEnvVarsCMOptional "context" $) }}
             {{- end }}
             {{- if .Values.grafana.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.grafana.extraEnvVarsSecret "context" $) }}
-                optional: {{ include "common.tplvalues.render" (dict "value" .Values.grafana.extraEnvVarsSecretOptional "context" $) }}
             {{- end }}
           env:
-            {{- if .Values.usePasswordFiles }}
-            - name: GF_SECURITY_ADMIN_PASSWORD_FILE
-              value: {{ printf "/opt/bitnami/grafana/secrets/%s" (include "grafana.adminSecretPasswordKey" .) }}
-            {{- else }}
             - name: GF_SECURITY_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "grafana.adminSecretName" . }}
                   key: {{ include "grafana.adminSecretPasswordKey" . }}
-            {{- end }}
             {{- if .Values.smtp.enabled }}
             - name: GF_SMTP_ENABLED
               value: "true"
@@ -172,12 +159,6 @@ spec:
             - name: GF_SMTP_SKIP_VERIFY
               value: "{{ .Values.smtp.skipVerify }}"
             {{- end }}
-            {{- if .Values.usePasswordFiles }}
-            - name: GF_SMTP_USER_FILE
-              value: {{ printf "/opt/bitnami/grafana/secrets/%s" (include "grafana.smtpSecretUserKey" .) }}
-            - name: GF_SMTP_PASSWORD_FILE
-              value: {{ printf "/opt/bitnami/grafana/secrets/%s" (include "grafana.smtpSecretPasswordKey" .) }}
-            {{- else }}
             - name: GF_SMTP_USER
               valueFrom:
                 secretKeyRef:
@@ -188,7 +169,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "grafana.smtpSecretName" . }}
                   key: {{ include "grafana.smtpSecretPasswordKey" . }}
-            {{- end }}
             {{- end }}
             {{- if .Values.grafana.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.grafana.extraEnvVars "context" $) | nindent 12 }}
@@ -206,10 +186,6 @@ spec:
             - name: empty-dir
               mountPath: /bitnami/grafana
               subPath: app-volume-dir
-            {{- if and .Values.usePasswordFiles }}
-            - name: grafana-secrets
-              mountPath: /opt/bitnami/grafana/secrets
-            {{- end }}
             {{- if .Values.config.useGrafanaIniFile }}
             - name: grafana-ini
               mountPath: /opt/bitnami/grafana/conf/grafana.ini
@@ -321,25 +297,12 @@ spec:
       volumes:
         - name: empty-dir
           emptyDir: {}
-        {{- if and .Values.usePasswordFiles }}
-        - name: grafana-secrets
-          projected:
-            sources:
-              - secret:
-                  name:  {{ include "grafana.adminSecretName" . }}
-              {{- if .Values.smtp.enabled }}
-              - secret:
-                  name:  {{ include "grafana.smtpSecretName" . }}
-              {{- end }}
-        {{- end }}
-        {{- if eq (lower .Values.grafana.kind) "deployment" }}
         - name: data
         {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ include "common.tplvalues.render" ( dict "value" .Values.persistence.existingClaim "context" $) | default (include "common.names.fullname" .) }}
         {{- else }}
           emptyDir: {}
-        {{- end }}
         {{- end }}
         {{- if .Values.ldap.enabled }}
         - name: ldap
@@ -363,19 +326,15 @@ spec:
             name: {{ include "common.names.fullname" . }}-provider
             {{- end }}
         {{- end }}
-{{- $dashboardConfigMapNames := list }}
-{{- range .Values.dashboardsConfigMaps }}
-  {{- $dashboardConfigMapNames = append $dashboardConfigMapNames .configMapName }}
-{{- end }}
-        {{- range $dashboardConfigMapNames | uniq }}
-        - name: {{ include "common.tplvalues.render" ( dict "value" . "context" $ ) }}
+        {{- range .Values.dashboardsConfigMaps }}
+        - name: {{ include "common.tplvalues.render" ( dict "value" .configMapName "context" $ ) }}
           configMap:
-            name: {{ include "common.tplvalues.render" ( dict "value" . "context" $ ) }}
+            name: {{ include "common.tplvalues.render" ( dict "value" .configMapName "context" $ ) }}
         {{- end }}
         {{- if .Values.datasources.secretName }}
         - name: datasources
           secret:
-            secretName: {{ include "common.tplvalues.render" ( dict "value" .Values.datasources.secretName "context" $) }}
+            secretName: {{ .Values.datasources.secretName }}
         {{- else if .Values.datasources.secretDefinition }}
         - name: datasources
           secret:
@@ -414,30 +373,3 @@ spec:
         {{- if .Values.grafana.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.grafana.extraVolumes  "context" $) | nindent 8 }}
         {{- end }}
-  {{- if and (eq (lower .Values.grafana.kind) "statefulset") .Values.persistence.enabled }}
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-        {{- if .Values.persistence.annotations }}
-        annotations: {{- include "common.tplvalues.render" (dict "value" .Values.persistence.annotations "context" $) | nindent 10 }}
-        {{- end }}
-        {{- if .Values.persistence.labels }}
-        labels: {{- include "common.tplvalues.render" (dict "value" .Values.persistence.labels "context" $) | nindent 10 }}
-        {{- end }}
-      spec:
-        accessModes:
-        {{- if .Values.persistence.accessModes }}
-          {{- range .Values.persistence.accessModes }}
-          - {{ . | quote }}
-          {{- end }}
-        {{- else }}
-          - {{ .Values.persistence.accessMode | quote }}
-        {{- end }}
-        resources:
-          requests:
-            storage: {{ .Values.persistence.size | quote }}
-        {{- include "common.storage.class" (dict "persistence" .Values.persistence "global" .Values.global) | nindent 8 }}
-        {{- if .Values.persistence.selector }}
-        selector: {{- include "common.tplvalues.render" (dict "value" .Values.persistence.selector "context" $) | nindent 10 }}
-        {{- end }}
-  {{- end }}
